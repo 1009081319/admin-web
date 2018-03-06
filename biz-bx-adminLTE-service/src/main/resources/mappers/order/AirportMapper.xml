@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ly.fn.admin.modules.order.dao.AirportDao">
+
+    <resultMap id="Airport_ResultMap" type="Airport">
+        <id column="id" property="id"/>
+        <result column="airportCode" property="airportCode"/>
+        <result column="airportName" property="airportName"/>
+        <result column="firstWord" property="firstWord"/>
+    </resultMap>
+
+    <sql id="Airport_Select_Field">
+        id,airportCode,airportName,firstWord
+    </sql>
+
+    <select id="getById" resultMap="Airport_ResultMap">
+        SELECT
+        <include refid="Airport_Select_Field"/>
+        FROM AirPort WHERE id=#{id}
+    </select>
+
+    <insert id="addAirport" parameterType="Airport" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO AirPort
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="airportCode != null and airportCode != ''">
+                airportCode,
+            </if>
+            <if test="airportName != null and airportName != ''">
+                airportName,
+            </if>
+            <if test="firstWord != null and firstWord != ''">
+                firstWord,
+            </if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="airportCode != null and airportCode != ''">
+                #{airportCode},
+            </if>
+            <if test="airportName != null and airportName != ''">
+                #{airportName},
+            </if>
+            <if test="firstWord != null and firstWord != ''">
+                #{firstWord},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateAirport" parameterType="Airport">
+        UPDATE AirPort
+        <set>
+            <if test="airportCode != null and airportCode != ''">
+                airportCode = #{airportCode},
+            </if>
+            <if test="airportName != null and airportName != ''">
+                airportName = #{airportName},
+            </if>
+            <if test="firstWord != null and firstWord != ''">
+                firstWord = #{firstWord},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>

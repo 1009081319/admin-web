@@ -1,0 +1,43 @@
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context  http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <bean id="dataSource_product" class="com.ly.fn.inf.config.ctx.ns.NsObjectFactoryBean" lazy-init="false">
+        <property name="nsPath" value="${biz-bx-admin-web.product.db-path}"/>
+        <property name="objectType" value="org.apache.tomcat.jdbc.pool.DataSource"/>
+        <property name="objectDestroyMethod" value="close"/>
+        <property name="objectProperties">
+            <map>
+                <entry key="driverClassName" value="com.mysql.jdbc.Driver" />
+                <entry key="testWhileIdle" value="true" />
+                <entry key="validationQuery" value="select 1" />
+                <entry key="validationInterval" value="30000" />
+                <entry key="maxWait" value="10000" />
+                <entry key="jdbcInterceptors" value="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer" />
+                <entry key="defaultAutoCommit"  value="false"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="sqlSessionFactory_product" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource_product"/>
+        <property name="configLocation" value="classpath:config/mybatis-config.xml"/>
+        <property name="mapperLocations" value="classpath*:mappers/product/*.xml"/>
+    </bean>
+
+    <bean id="transactionManager_product" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource_product"/>
+    </bean>
+
+    <tx:annotation-driven transaction-manager="transactionManager_product"/>
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.ly.fn.admin.modules.product"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory_product"/>
+        <property name="annotationClass" value="com.ly.fn.admin.common.annotation.MyBatisDao"/>
+    </bean>
+
+</beans>

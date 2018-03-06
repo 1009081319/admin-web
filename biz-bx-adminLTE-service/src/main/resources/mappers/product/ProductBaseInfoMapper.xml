@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ly.fn.admin.modules.product.dao.ProductBaseInfoDao">
+
+    <resultMap id="ProductBaseInfo_Map" type="ProductBaseInfo">
+        <id column="id" property="id"/>
+        <result column="productCode" property="productCode"/>
+        <result column="productName" property="productName"/>
+        <result column="supplierCode" property="supplierCode"/>
+        <result column="supplierName" property="supplierName"/>
+        <result column="insuranceCompany" property="insuranceCompanyCode"/>
+        <result column="insuranceCompanyName" property="insuranceCompanyName"/>
+        <result column="createTime" property="createTime"/>
+        <result column="updateTime" property="updateTime"/>
+        <result column="isValid" property="isValid"/>
+        <result column="isDel" property="isDel"/>
+    </resultMap>
+
+    <sql id="product_select_field_sql">
+        id,productCode,productName,supplierCode,supplierName,insuranceCompany,insuranceCompanyName,createTime,updateTime,isValid,isDel
+    </sql>
+
+    <select id="getById" resultMap="ProductBaseInfo_Map">
+        SELECT
+        <include refid="product_select_field_sql"/>
+        FROM ProductBaseInfo WHERE id=#{id}
+    </select>
+
+    <select id="findList" resultMap="ProductBaseInfo_Map">
+        SELECT
+        <include refid="product_select_field_sql"/>
+        FROM ProductBaseInfo
+        <where>
+            <if test="productCode != null and productCode != ''">
+                AND productCode LIKE concat(#{productCode},'%')
+            </if>
+            <if test="productName != null and productName != ''">
+                AND productName LIKE concat(#{productName},'%')
+            </if>
+
+        </where>
+    </select>
+</mapper>

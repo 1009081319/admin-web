@@ -1,0 +1,29 @@
+<configuration>
+
+    <include resource="com/ly/fn/inf/rpc/config/inf-rpc-logback.xml" />
+    <include resource="com/ly/fn/inf/daf/config/inf-daf-logback.xml" />
+
+    <appender name="BIZ-BX-ADMINLTE-LOG-FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/data/logs/skynet-tcjf.biz.bx.adminLTE.web/app/biz-bx-adminLTE-web.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>6</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] %-5level[%thread][%logger{36}] - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] %-5level[%thread][%logger{36}] - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="BIZ-BX-ADMINLTE-LOG-FILE" />
+    </root>
+
+</configuration>

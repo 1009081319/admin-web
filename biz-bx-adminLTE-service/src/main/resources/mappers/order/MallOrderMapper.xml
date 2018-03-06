@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ly.fn.admin.modules.order.dao.MallOrderDao">
+
+    <resultMap id="MallOrder_ResultMap" type="MallOrder">
+        <id column="id" property="id"/>
+        <result column="code" property="orderCode"/>
+        <result column="orderStatus" property="orderStatus"/>
+        <result column="orderType" property="orderType"/>
+        <result column="orderFee" property="orderFee"/>
+        <result column="productCode" property="productCode"/>
+        <result column="productName" property="productName"/>
+        <result column="planName" property="planName"/>
+        <result column="holderName" property="holderName"/>
+        <result column="holderPhone" property="holderPhone"/>
+        <result column="safeguardStartTime" property="safeguardStartTime"/>
+        <result column="safeguardEndTime" property="safeguardEndTime"/>
+        <result column="createTime" property="createTime"/>
+    </resultMap>
+
+    <sql id="MallOrder_Select_Field">
+        id,code,orderStatus,orderType,orderFee,productCode,productName,planName,holderName,holderPhone,safeguardStartTime,safeguardEndTime,createTime
+    </sql>
+
+    <select id="getById" resultMap="MallOrder_ResultMap">
+        SELECT <include refid="MallOrder_Select_Field"/>
+        FROM mall_order WHERE id=#{id}
+    </select>
+
+    <select id="getCount" parameterType="MallOrder" resultType="int">
+        SELECT COUNT(1) FROM mall_order
+        <where>
+            <if test="fastSearchWord != null and fastSearchWord != ''">
+                AND (code like concat(#{fastSearchWord},'%') or holderName like concat(#{fastSearchWord},'%'))
+            </if>
+            <if test="orderStatus != null">
+                AND orderStatus = #{orderStatus}
+            </if>
+            <if test="holderName != null and holderName != ''">
+                AND holderName = #{holderName}
+            </if>
+            <if test="productName != null and productName != ''">
+                and productName like concat(#{productName},'%')
+            </if>
+            <if test="orderType != null">
+                and orderType= #{orderType}
+            </if>
+        </where>
+    </select>
+
+    <select id="findList" resultMap="MallOrder_ResultMap" parameterType="MallOrder">
+        SELECT <include refid="MallOrder_Select_Field"/>
+        FROM mall_order
+        <where>
+            <if test="fastSearchWord != null and fastSearchWord != ''">
+                AND (code like concat(#{fastSearchWord},'%') or holderName like concat(#{fastSearchWord},'%'))
+            </if>
+            <if test="orderStatus != null">
+                AND orderStatus = #{orderStatus}
+            </if>
+            <if test="holderName != null and holderName != ''">
+                AND holderName = #{holderName}
+            </if>
+            <if test="productName != null and productName != ''">
+                and productName like concat(#{productName},'%')
+            </if>
+            <if test="orderType != null">
+                and orderType= #{orderType}
+            </if>
+        </where>
+        <choose>
+            <when test="sortStr != null and sortStr != ''">
+                ORDER BY ${sortStr}
+            </when>
+            <otherwise>
+                ORDER BY id desc
+            </otherwise>
+        </choose>
+         limit #{start},#{length}
+    </select>
+
+</mapper>

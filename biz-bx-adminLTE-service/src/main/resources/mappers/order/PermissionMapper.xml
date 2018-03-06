@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ly.fn.admin.modules.system.dao.PermissionDao">
+
+    <resultMap id="Permission_ResultMap" type="Permission">
+        <id column="id" property="id"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="display_type" property="displayType"/>
+        <result column="cname" property="cname"/>
+        <result column="ename" property="ename"/>
+        <result column="delete_flag" property="deleteFlag"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remarks" property="remarks"/>
+    </resultMap>
+
+    <sql id="Permission_Selected_Field">
+        id,parent_id,display_type,cname,ename,url,delete_flag,create_time,update_time,remarks
+    </sql>
+
+    <select id="getById" resultMap="Permission_ResultMap">
+        SELECT <include refid="Permission_Selected_Field"/>
+        FROM sys_permission WHERE id = #{id}
+    </select>
+
+    <insert id="addPermission" parameterType="Permission" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO sys_permission
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">
+                parent_id,
+            </if>
+            <if test="displayType != null">
+                display_type,
+            </if>
+            <if test="cname != null and cname != ''">
+                cname,
+            </if>
+            <if test="ename != null and ename != ''">
+                ename,
+            </if>
+            <if test="deleteFlag != null">
+                delete_flag,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="remarks != null and remarks != ''">
+                remarks,
+            </if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="parentId != null">
+                #{parentId},
+            </if>
+            <if test="displayType != null">
+                #{displayType},
+            </if>
+            <if test="cname != null and cname != ''">
+                #{cname},
+            </if>
+            <if test="ename != null and ename != ''">
+                #{ename},
+            </if>
+            <if test="deleteFlag != null">
+                #{deleteFlag},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+            <if test="remarks != null and remarks != ''">
+                #{remarks},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updatePermission" parameterType="Permission">
+        UPDATE sys_permission
+        <set>
+            <if test="cname != null and cname != ''">
+                cname = #{cname},
+            </if>
+            <if test="ename !=null and ename != ''">
+                ename = #{ename},
+            </if>
+            <if test="updateTime != null">
+                updateTime = #{updateTime},
+            </if>
+            <if test="remarks != null and remarks != ''">
+                remarks = #{remarks},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Long">
+        DELETE FROM sys_permission WHERE id = #{id}
+    </delete>
+
+    <select id="getPermissionByUserId" parameterType="java.lang.Long" resultMap="Permission_ResultMap">
+        SELECT sp.id,sp.parent_id,sp.display_type,sp.cname,sp.ename,sp.url,sp.delete_flag,sp.create_time,sp.update_time,sp.remarks
+        FROM sys_permission sp
+        LEFT JOIN sys_role_permission srp on sp.id = srp.permission_id
+        LEFT JOIN sys_user_role sur on srp.role_id=sur.role_id
+        WHERE sp.delete_flag=0 AND sur.user_id = #{userId}
+    </select>
+</mapper>

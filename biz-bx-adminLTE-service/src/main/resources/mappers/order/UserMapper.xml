@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ly.fn.admin.modules.system.dao.UserDao">
+
+    <resultMap id="User_ResultMap" type="User">
+        <id column="id" property="id"/>
+        <result column="open_id" property="openId"/>
+        <result column="login_name" property="loginName"/>
+        <result column="phone" property="phone"/>
+        <result column="email" property="email"/>
+        <result column="password" property="password"/>
+        <result column="nick_name" property="nickName"/>
+        <result column="last_login_time" property="lastLoginTime"/>
+        <result column="delete_flag" property="deleteFlag"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remarks" property="remarks"/>
+        <association property="role" column="role_id" select="com.ly.fn.admin.modules.system.dao.RoleDao.getById"/>
+    </resultMap>
+
+    <sql id="User_Selected_Field">
+        a.id,a.open_id,a.login_name,a.phone,a.email,a.nick_name,a.password,a.last_login_time,a.delete_flag,a.create_time,a.update_time,a.remarks,b.role_id
+    </sql>
+
+    <select id="getById" resultMap="User_ResultMap">
+        SELECT <include refid="User_Selected_Field"/>
+        FROM sys_user a
+        LEFT JOIN sys_user_role b ON a.id = b.user_id WHERE a.id=#{id}
+    </select>
+
+    <select id="getByLoginName" resultMap="User_ResultMap">
+        SELECT <include refid="User_Selected_Field"/>
+        FROM sys_user a
+        LEFT JOIN sys_user_role b on a.id = b.user_id
+        WHERE login_name = #{loginName} and delete_flag = 0
+    </select>
+
+    <select id="getCount" parameterType="User" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM sys_user WHERE delete_flag=0
+        <where>
+            <if test="phone != null and phone != ''">
+                AND phone = #{phone}
+            </if>
+            <if test="nickName != null and nickName != ''">
+                AND nick_name like concat(#{nickName},'%')
+            </if>
+        </where>
+    </select>
+
+    <select id="findList" parameterType="User" resultMap="User_ResultMap">
+        SELECT
+        <include refid="User_Selected_Field"/>
+        FROM sys_user a
+        LEFT JOIN sys_user_role b ON a.id = b.user_id
+        WHERE a.delete_flag=0
+        <where>
+            <if test="phone != null and phone != ''">
+                AND phone = #{phone}
+            </if>
+            <if test="nickName != null and nickName != ''">
+                AND nick_name like concat(#{nickName},'%')
+            </if>
+        </where>
+        <choose>
+            <when test="sortStr != null and sortStr != ''">
+                ORDER BY ${sortStr}
+            </when>
+            <otherwise>
+                ORDER BY a.id desc
+            </otherwise>
+        </choose>
+        limit #{start},#{length}
+    </select>
+
+    <insert id="addUser" parameterType="User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="openId != null and openId != ''">
+                open_id,
+            </if>
+            <if test="loginName != null and loginName != ''">
+                login_name,
+            </if>
+            <if test="phone != null and phone != ''">
+                phone,
+            </if>
+            <if test="email != null and email != ''">
+                email,
+            </if>
+            <if test="password != null and password != ''">
+                password,
+            </if>
+            <if test="nickName != null and nickName !=''">
+                nick_name,
+            </if>
+            <if test="lastLoginTime != null">
+                last_login_time,
+            </if>
+            <if test="remarks != null and remarks != ''">
+                remarks,
+            </if>
+        </trim>
+        <trim prefix="VALUES( " suffix=")" suffixOverrides=",">
+            <if test="openId != null and openId != ''">
+                #{openId},
+            </if>
+            <if test="loginName != null and loginName != ''">
+                #{loginName},
+            </if>
+            <if test="phone != null and phone != ''">
+                #{phone},
+            </if>
+            <if test="email != null and email != ''">
+                #{email},
+            </if>
+            <if test="password != null and password != ''">
+                #{password},
+            </if>
+            <if test="nickName != null and nickName !=''">
+                #{nickName},
+            </if>
+            <if test="lastLoginTime != null">
+                #{lastLoginTime},
+            </if>
+            <if test="remarks != null and remarks != ''">
+                #{remarks},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateUser" parameterType="User">
+        UPDATE sys_user
+        <set>
+            <if test="phone != null and phone != ''">
+                phone = #{phone},
+            </if>
+            <if test="nickName != null and nickName !=''">
+                nick_name = #{nickName},
+            </if>
+            <if test="email != null and email != ''">
+                email = #{email},
+            </if>
+            <if test="lastLoginTime != null">
+                last_login_time = #{lastLoginTime},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>

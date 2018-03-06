@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ly.fn.admin.modules.system.dao.RoleDao">
+    <resultMap id="Role_ResultMap" type="Role">
+        <id column="id" property="id"/>
+        <result column="cname" property="cname"/>
+        <result column="ename" property="ename"/>
+        <result column="delete_flag" property="deleteFlag"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="remarks" property="remarks"/>
+    </resultMap>
+
+    <sql id="Role_Selected_Field_Sql">
+        id,cname,ename,delete_flag,create_time,update_time,remarks
+    </sql>
+
+    <select id="getById" resultMap="Role_ResultMap">
+        SELECT <include refid="Role_Selected_Field_Sql"/>
+        FROM sys_role WHERE delete_flag = 0 AND id = #{id}
+    </select>
+
+    <select id="getCount" resultType="java.lang.Integer" parameterType="Role">
+        SELECT COUNT(1) FROM sys_role
+        WHERE delete_flag = 0
+        <if test="cname != null and cname != ''">
+            AND cname LIKE concat(#{cname},'%')
+        </if>
+        <if test="ename != null and ename != ''">
+            AND ename like concat(#{ename},'%')
+        </if>
+    </select>
+
+    <select id="findList" resultMap="Role_ResultMap" parameterType="Role">
+        SELECT <include refid="Role_Selected_Field_Sql"/>
+        FROM sys_role
+        WHERE delete_flag = 0
+        <if test="cname != null and cname != ''">
+            AND cname LIKE concat(#{cname},'%')
+        </if>
+        <if test="ename != null and ename != ''">
+            AND ename like concat(#{ename},'%')
+        </if>
+        <choose>
+            <when test="sortStr != null and sortStr != ''">
+                ORDER BY ${sortStr}
+            </when>
+            <otherwise>
+                ORDER BY id desc
+            </otherwise>
+        </choose>
+        limit #{start},#{length}
+    </select>
+
+    <insert id="addRole" parameterType="Role" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sys_role
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="cname != null and cname != ''">
+                cname,
+            </if>
+            <if test="ename != null and ename != ''">
+                ename,
+            </if>
+            <if test="deleteFlag != null">
+                delete_flag,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="remarks != null and remarks != ''">
+                remarks,
+            </if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="cname != null and cname != ''">
+                #{cname},
+            </if>
+            <if test="ename != null and ename != ''">
+                #{ename},
+            </if>
+            <if test="deleteFlag != null">
+                #{deleteFlag},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+            <if test="remarks != null and remarks != ''">
+                #{remarks},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateRole" parameterType="Role">
+        UPDATE sys_role
+        <set>
+            <if test="cname != null and cname != ''">
+                cname = #{cname},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="deleteById" parameterType="java.lang.Long">
+        UPDATE sys_role SET delete_flag = 1 WHERE id = #{id}
+    </update>
+</mapper>
